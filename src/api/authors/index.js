@@ -84,11 +84,11 @@ authorsRouter.delete("/:authorId", (req, res) => {
   const remainingAuthors = authorsList.filter((author) => author.id !== req.params.authorId);
 
   fs.writeFileSync(authorJSONPath, JSON.stringify(remainingAuthors));
-  res.send({ message: "Author deleted successfully" });
+  res.send({ message: `Author deleted successfully` });
 });
 
 // 6. POST SINGLE AUTHOR CHECKEMAIL: http://localhost:3001/authors/checkEmail
-authorsRouter.delete("/:authorId", (req, res) => {
+authorsRouter.put("/checkEmail", (req, res) => {
   const authorsList = JSON.parse(fs.readFileSync(authorJSONPath));
 
   const remainingAuthors = authorsList.filter((author) => author.id !== req.params.authorId);
