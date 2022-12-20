@@ -24,7 +24,13 @@ const authorJSONPath = join(dirname(fileURLToPath(import.meta.url)), "authorsLis
 authorsRouter.post("/", (req, res) => {
   console.log("Request BODY: ", req.body);
 
-  const author = { ...req.body, createdAt: new Date(), id: uniqid() };
+  const author = {
+    ...req.body,
+    email: `${req.body.name}.${req.body.surname}@email.com`,
+    avatar: `https://ui-avatars.com/api/?name=${req.body.name}+${req.body.surname}`,
+    createdAt: new Date(),
+    id: uniqid(),
+  };
   console.log("The author is: ", author);
 
   const authorsList = JSON.parse(fs.readFileSync(authorJSONPath));
@@ -33,7 +39,7 @@ authorsRouter.post("/", (req, res) => {
 
   fs.writeFileSync(authorJSONPath, JSON.stringify(authorsList));
 
-  res.status(201).send({ message: "Davido da o tigareee", id: author.id });
+  res.status(201).send({ message: `Author: ${author.name} has been created`, id: author.id });
 });
 
 // 2. GET: http://localhost:3001/authors/
@@ -72,6 +78,16 @@ authorsRouter.put("/:authorId", (req, res) => {
 });
 
 // 5. DELETE SINGLE AUTHOR: http://localhost:3001/authors/:authorId
+authorsRouter.delete("/:authorId", (req, res) => {
+  const authorsList = JSON.parse(fs.readFileSync(authorJSONPath));
+
+  const remainingAuthors = authorsList.filter((author) => author.id !== req.params.authorId);
+
+  fs.writeFileSync(authorJSONPath, JSON.stringify(remainingAuthors));
+  res.send({ message: "Author deleted successfully" });
+});
+
+// 6. POST SINGLE AUTHOR CHECKEMAIL: http://localhost:3001/authors/checkEmail
 authorsRouter.delete("/:authorId", (req, res) => {
   const authorsList = JSON.parse(fs.readFileSync(authorJSONPath));
 
