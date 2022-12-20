@@ -26,7 +26,7 @@ authorsRouter.post("/", (req, res) => {
 
   const author = {
     ...req.body,
-    email: `${req.body.name}.${req.body.surname}@email.com`,
+    email: `${req.body.name.toLowerCase()}.${req.body.surname.toLowerCase()}@email.com`,
     avatar: `https://ui-avatars.com/api/?name=${req.body.name}+${req.body.surname}`,
     createdAt: new Date(),
     id: uniqid(),
