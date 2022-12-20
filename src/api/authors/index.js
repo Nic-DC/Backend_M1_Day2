@@ -54,14 +54,18 @@ authorsRouter.get("/:authorId", (req, res) => {
   res.send(author);
 });
 
-// 4. UPDATE SINGEL AUTHOR: http://localhost:3001/authors/:authorId
-authorsRouter.get("/:authorId", (req, res) => {
+// 4. UPDATE SINGLE AUTHOR: http://localhost:3001/authors/:authorId
+authorsRouter.put("/:authorId", (req, res) => {
+  const { authorId } = req.params;
+
   const authorsList = JSON.parse(fs.readFileSync(authorJSONPath));
 
-  const index = authorsList.findIndex((author) => author.id === req.params.authorId);
+  const index = authorsList.findIndex((author) => author.id === authorId);
   const oldAuthor = authorsList[index];
   const updateAuthor = { ...oldAuthor, ...req.body, updatedAt: new Date() };
   authorsList[index] = updateAuthor;
+
+  console.log("Updated author: ", updateAuthor);
 
   fs.writeFileSync(authorJSONPath, JSON.stringify(authorsList));
   res.send(updateAuthor);
