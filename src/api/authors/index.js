@@ -71,4 +71,14 @@ authorsRouter.put("/:authorId", (req, res) => {
   res.send(updateAuthor);
 });
 
+// 5. DELETE SINGLE AUTHOR: http://localhost:3001/authors/:authorId
+authorsRouter.delete("/:authorId", (req, res) => {
+  const authorsList = JSON.parse(fs.readFileSync(authorJSONPath));
+
+  const remainingAuthors = authorsList.filter((author) => author.id !== req.params.authorId);
+
+  fs.writeFileSync(authorJSONPath, JSON.stringify(remainingAuthors));
+  res.send({ message: "Author deleted successfully" });
+});
+
 export default authorsRouter;
