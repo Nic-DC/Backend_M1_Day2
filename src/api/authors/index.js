@@ -27,14 +27,14 @@ authorsRouter.post("/", (req, res) => {
   const author = {
     ...req.body,
     email: `${req.body.name.toLowerCase()}.${req.body.surname.toLowerCase()}@email.com`,
+
     avatar: `https://ui-avatars.com/api/?name=${req.body.name}+${req.body.surname}`,
+
     createdAt: new Date(),
     id: uniqid(),
   };
   console.log("The author is: ", author);
-
   const authorsList = JSON.parse(fs.readFileSync(authorJSONPath));
-
   authorsList.push(author);
 
   fs.writeFileSync(authorJSONPath, JSON.stringify(authorsList));
@@ -88,22 +88,22 @@ authorsRouter.delete("/:authorId", (req, res) => {
 });
 
 // 6. POST SINGLE AUTHOR CHECKEMAIL: http://localhost:3001/authors/checkEmail
-// authorsRouter.post("/checkEmail", (req, res) => {
-//   console.log("Request BODY: ", req.body);
+authorsRouter.post("/checkEmail/:email", (req, res) => {
+  console.log("Request BODY: ", req.body);
 
-//   const author = {
-//     ...req.body,
-//     isEmailUnique: `${req.body.email}`,
-//   };
-//   console.log("The author is: ", author);
+  const authorsList = JSON.parse(fs.readFileSync(authorJSONPath));
 
-//   const authorsList = JSON.parse(fs.readFileSync(authorJSONPath));
+  const email = {
+    ...req.body,
+    isEmailUnique: `${authorsList.find((author) => author.email === req.params.email) ? false : true}`,
+  };
+  console.log("The email is: ", email);
 
-//   authorsList.push(author);
+  //   authorsList.push(author);
 
-//   fs.writeFileSync(authorJSONPath, JSON.stringify(authorsList));
+  //   fs.writeFileSync(authorJSONPath, JSON.stringify(authorsList));
 
-//   res.status(201).send({ message: `Author: ${author.name} has been created`, id: author.id });
-// });
+  res.status(201).send({ message: `The email ${email.isEmailUnique ? "does NOT exist" : "exists"}`, email });
+});
 
 export default authorsRouter;
