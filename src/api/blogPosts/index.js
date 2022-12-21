@@ -113,13 +113,21 @@ postsRouter.put("/:blogPostId", (req, res, next) => {
 });
 
 // 5. DELETE SINGLE AUTHOR: http://localhost:3001/authors/:blogPostId
-postsRouter.delete("/:blogPostId", (req, res) => {
-  const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+postsRouter.delete("/:blogPostId", (req, res, next) => {
+  try {
+    const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
 
-  const remainingPosts = postsList.filter((post) => post.id !== req.params.blogPostId);
+    const remainingPosts = postsList.filter((post) => post.id !== req.params.blogPostId);
 
-  fs.writeFileSync(postsJSONPath, JSON.stringify(remainingPosts));
-  res.send({ message: `Post deleted successfully` });
+    if (postsList.length !== remainingPosts.length) {
+      fs.writeFileSync(postsJSONPath, JSON.stringify(remainingPosts));
+      res.send({ message: `Post deleted successfully` });
+    } else {
+      next(NotFound(`The post with the id: ${req.params.blogPostId} is not in our archive`));
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default postsRouter;

@@ -9,7 +9,7 @@ import cors from "cors";
 
 const server = express();
 
-const port = 3001;
+const port = 3003;
 server.use(cors()); // Just to let FE communicate with BE successfully
 server.use(express.json());
 

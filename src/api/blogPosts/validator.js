@@ -22,8 +22,8 @@ export const triggerBadRequest = (req, res, next) => {
   const errorList = validationResult(req);
 
   if (!errorList.isEmpty()) {
-    // next(createHttpError(400, "Error during post validation", { errors: errorList.array() }));
-    next(createHttpError(400, "Error during post validation"));
+    next(createHttpError(400, "Error during post validation", { errors: errorList.array() }));
+    // next(createHttpError(400, "Error during post validation"));
   } else {
     next();
   }
