@@ -87,20 +87,29 @@ postsRouter.get("/:blogPostId", (req, res, next) => {
 });
 
 // 4. UPDATE SINGLE Blog Post: http://localhost:3001/authors/:blogPostId
-postsRouter.put("/:blogPostId", (req, res) => {
-  const { blogPostId } = req.params;
+postsRouter.put("/:blogPostId", (req, res, next) => {
+  try {
+    const { blogPostId } = req.params;
 
-  const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
 
-  const index = postsList.findIndex((post) => post.id === blogPostId);
-  const oldPost = postsList[index];
-  const updatePost = { ...oldPost, ...req.body, updatedAt: new Date() };
-  postsList[index] = updatePost;
+    const index = postsList.findIndex((post) => post.id === blogPostId);
 
-  console.log("Updated post: ", updatePost);
+    if (index !== -1) {
+      const oldPost = postsList[index];
+      const updatePost = { ...oldPost, ...req.body, updatedAt: new Date() };
+      postsList[index] = updatePost;
 
-  fs.writeFileSync(postsJSONPath, JSON.stringify(postsList));
-  res.send(updatePost);
+      console.log("Updated post: ", updatePost);
+
+      fs.writeFileSync(postsJSONPath, JSON.stringify(postsList));
+      res.send(updatePost);
+    } else {
+      next(NotFound(`Book with id ${blogPostId} not found!`));
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 // 5. DELETE SINGLE AUTHOR: http://localhost:3001/authors/:blogPostId
