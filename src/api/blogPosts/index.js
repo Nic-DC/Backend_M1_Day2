@@ -4,6 +4,11 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
 
+import httpErrors from "http-errors";
+import createHttpError from "http-errors";
+
+const { NotFound } = httpErrors;
+
 const postsRouter = express.Router();
 const postsJSONPath = join(dirname(fileURLToPath(import.meta.url)), "blogPosts.json");
 
@@ -57,14 +62,23 @@ postsRouter.get("/", (req, res, next) => {
 });
 
 // 3. GET SINGLE Blog Post: http://localhost:3001/authors/:blogPostId
-postsRouter.get("/:blogPostId", (req, res) => {
-  const blogPostId = req.params.blogPostId;
+postsRouter.get("/:blogPostId", (req, res, next) => {
+  try {
+    const blogPostId = req.params.blogPostId;
 
-  const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
 
-  const post = postsList.find((post) => post.id === blogPostId);
+    const post = postsList.find((post) => post.id === blogPostId);
 
-  res.send(post);
+    if (post) {
+      res.send(post);
+    } else {
+      // next(createHttpError(404, `The post with id: ${blogPostId} is not in the archive`));
+      next(NotFound(`The post with id: ${blogPostId} is not in the archive`));
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 // 4. UPDATE SINGLE Blog Post: http://localhost:3001/authors/:blogPostId
