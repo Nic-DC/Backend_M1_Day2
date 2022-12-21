@@ -99,10 +99,6 @@ authorsRouter.post("/checkEmail/:email", (req, res) => {
   };
   console.log("The email is: ", email);
 
-  //   authorsList.push(author);
-
-  //   fs.writeFileSync(authorJSONPath, JSON.stringify(authorsList));
-
   res.status(201).send({ message: `The email ${email.isEmailUnique ? "does NOT exist" : "exists"}`, email });
 });
 
