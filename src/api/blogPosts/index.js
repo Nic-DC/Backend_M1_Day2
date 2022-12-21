@@ -3,44 +3,49 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
+import { checkPostSchema, triggerBadRequest } from "./validator.js";
 
 import httpErrors from "http-errors";
 import createHttpError from "http-errors";
 
-const { NotFound } = httpErrors;
+const { NotFound, BadRequest } = httpErrors;
 
 const postsRouter = express.Router();
 const postsJSONPath = join(dirname(fileURLToPath(import.meta.url)), "blogPosts.json");
 
 // 1. POST: http://localhost:3001/blogPosts/
-postsRouter.post("/", (req, res) => {
+postsRouter.post("/", checkPostSchema, triggerBadRequest, (req, res, next) => {
   console.log("Request BODY: ", req.body);
 
-  const post = {
-    ...req.body,
-    // category: "ARTICLE CATEGORY",
-    // title: "ARTICLE TITLE",
-    // cover: "ARTICLE COVER (IMAGE LINK)",
-    // readTime: {
-    //   value: `${req.body.readTime.vlue}`,
-    //   unit: `${req.body.readTime.unit}`,
-    //},
-    author: {
-      //   name: `${req.body.author.name}`,
-      avatar: `https://ui-avatars.com/api/?name=${req.body.author.name}`,
-    },
-    // content: `${req.body.content}`,
-    createdAt: new Date(),
-    id: uniqid(),
-  };
+  try {
+    const post = {
+      ...req.body,
+      // category: "ARTICLE CATEGORY",
+      // title: "ARTICLE TITLE",
+      // cover: "ARTICLE COVER (IMAGE LINK)",
+      // readTime: {
+      //   value: `${req.body.readTime.vlue}`,
+      //   unit: `${req.body.readTime.unit}`,
+      //},
+      author: {
+        //   name: `${req.body.author.name}`,
+        avatar: `https://ui-avatars.com/api/?name=${req.body.author.name}`,
+      },
+      // content: `${req.body.content}`,
+      createdAt: new Date(),
+      id: uniqid(),
+    };
 
-  console.log("The post is: ", post);
-  const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
-  postsList.push(post);
+    console.log("The post is: ", post);
+    const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    postsList.push(post);
 
-  fs.writeFileSync(postsJSONPath, JSON.stringify(postsList));
+    fs.writeFileSync(postsJSONPath, JSON.stringify(postsList));
 
-  res.status(201).send({ message: `Post: '${post.title}' has been created by ${req.body.author.name}`, id: post.id });
+    res.status(201).send({ message: `Post: '${post.title}' has been created by ${req.body.author.name}`, id: post.id });
+  } catch (error) {
+    next(error);
+  }
 });
 
 // 2. GET ALL Blog Posts: http://localhost:3001/blogPosts/

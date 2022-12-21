@@ -3,7 +3,7 @@ import authorsRouter from "./api/authors/index.js";
 import postsRouter from "./api/blogPosts/index.js";
 import listEndpoints from "express-list-endpoints";
 
-import { notFoundHandler, serverErrorHandler } from "./errorHandler.js";
+import { badRequestHandler, notFoundHandler, serverErrorHandler } from "./errorHandler.js";
 
 import cors from "cors";
 
@@ -17,6 +17,7 @@ server.use(express.json());
 server.use("/authors", authorsRouter);
 server.use("/blogPosts", postsRouter);
 
+server.use(badRequestHandler);
 server.use(notFoundHandler);
 server.use(serverErrorHandler);
 
