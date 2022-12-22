@@ -1,7 +1,13 @@
 import express from "express";
 import multer from "multer";
 import { extname } from "path";
-import { saveBlogPostsCovers, getBlogPosts, writeBlogPosts } from "../../lib/fs-tools.js";
+import {
+  saveBlogPostsCovers,
+  getBlogPosts,
+  writeBlogPosts,
+  getAuthorsList,
+  writeAuthorsList,
+} from "../../lib/fs-tools.js";
 
 const filesRouter = express.Router();
 
@@ -29,6 +35,34 @@ filesRouter.post("/blogPosts/:id", multer().single("cover"), async (req, res, ne
       await writeBlogPosts(blogPosts);
     }
     res.send("Cover is uploaded");
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+filesRouter.post("/authors/:id", multer().single("avatar"), async (req, res, next) => {
+  try {
+    const originalFileExtension = extname(fileName, req.file.buffer);
+    const url = `http://localhost:3003/img/authors/${fileName}`;
+
+    const authorsList = getAuthorsList();
+
+    const index = authorsList.findIndex((author) => author.id === req.params.id);
+
+    if (index !== -1) {
+      const oldAuthor = authorsList[index];
+
+      const avatar = url;
+
+      const updatedAuthor = { ...oldAuthor, avatar, updatedAt: new Date() };
+
+      authorsList[index] = updatedAuthor;
+
+      writeAuthorsList(authorsList);
+    } else {
+      res.send("Author avatar is uploaded");
+    }
   } catch (error) {
     console.log(error);
     next(error);
