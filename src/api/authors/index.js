@@ -3,6 +3,14 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
+// import { checkPostSchema, triggerBadRequest } from "./validator.js";
+
+import httpErrors from "http-errors";
+import createHttpError from "http-errors";
+
+const { NotFound, BadRequest } = httpErrors;
+
+import { getAuthorsList, writeAuthorsList } from "../../lib/fs-tools.js";
 
 const authorsRouter = express.Router();
 

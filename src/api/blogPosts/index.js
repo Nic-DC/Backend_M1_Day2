@@ -8,13 +8,15 @@ import { checkPostSchema, triggerBadRequest } from "./validator.js";
 import httpErrors from "http-errors";
 import createHttpError from "http-errors";
 
+import { getBlogPosts, writeBlogPosts } from "../../lib/fs-tools.js";
+
 const { NotFound, BadRequest } = httpErrors;
 
 const postsRouter = express.Router();
-const postsJSONPath = join(dirname(fileURLToPath(import.meta.url)), "blogPosts.json");
+// const postsJSONPath = join(dirname(fileURLToPath(import.meta.url)), "blogPosts.json");
 
 // 1. POST: http://localhost:3001/blogPosts/
-postsRouter.post("/", checkPostSchema, triggerBadRequest, (req, res, next) => {
+postsRouter.post("/", checkPostSchema, triggerBadRequest, async (req, res, next) => {
   console.log("Request BODY: ", req.body);
 
   try {
@@ -27,32 +29,36 @@ postsRouter.post("/", checkPostSchema, triggerBadRequest, (req, res, next) => {
       //   value: `${req.body.readTime.vlue}`,
       //   unit: `${req.body.readTime.unit}`,
       //},
-      author: {
-        //   name: `${req.body.author.name}`,
-        avatar: `https://ui-avatars.com/api/?name=${req.body.author.name}`,
-      },
+      // author: {
+      //   name: `${req.body.author.name}`,
+      //     avatar: `https://ui-avatars.com/api/?name=${req.body.author.name}`,
+      //   },
       // content: `${req.body.content}`,
       createdAt: new Date(),
       id: uniqid(),
     };
 
     console.log("The post is: ", post);
-    const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    // const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    const postsList = await getBlogPosts();
     postsList.push(post);
 
-    fs.writeFileSync(postsJSONPath, JSON.stringify(postsList));
+    // fs.writeFileSync(postsJSONPath, JSON.stringify(postsList));
+    await writeBlogPosts(postsList);
 
-    res.status(201).send({ message: `Post: '${post.title}' has been created by ${req.body.author.name}`, id: post.id });
+    res.status(201).send({ message: `Post: '${post.title}' has been created by`, id: post.id });
   } catch (error) {
     next(error);
   }
 });
 
 // 2. GET ALL Blog Posts: http://localhost:3001/blogPosts/
-postsRouter.get("/", (req, res, next) => {
-  const content = fs.readFileSync(postsJSONPath);
-  const postsList = JSON.parse(content);
+postsRouter.get("/", async (req, res, next) => {
+  // const content = fs.readFileSync(postsJSONPath);
+  // const postsList = JSON.parse(content);
+
   try {
+    const postsList = await getBlogPosts();
     if (req.query && req.query.category) {
       const filteredPosts = postsList.filter(
         (post) => post.category.toLowerCase() === req.query.category.toLowerCase()
@@ -67,11 +73,12 @@ postsRouter.get("/", (req, res, next) => {
 });
 
 // 3. GET SINGLE Blog Post: http://localhost:3001/authors/:blogPostId
-postsRouter.get("/:blogPostId", (req, res, next) => {
+postsRouter.get("/:blogPostId", async (req, res, next) => {
   try {
     const blogPostId = req.params.blogPostId;
 
-    const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    // const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    const postsList = await getBlogPosts();
 
     const post = postsList.find((post) => post.id === blogPostId);
 
@@ -87,12 +94,12 @@ postsRouter.get("/:blogPostId", (req, res, next) => {
 });
 
 // 4. UPDATE SINGLE Blog Post: http://localhost:3001/authors/:blogPostId
-postsRouter.put("/:blogPostId", (req, res, next) => {
+postsRouter.put("/:blogPostId", async (req, res, next) => {
   try {
     const { blogPostId } = req.params;
 
-    const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
-
+    // const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    const postsList = await getBlogPosts();
     const index = postsList.findIndex((post) => post.id === blogPostId);
 
     if (index !== -1) {
@@ -102,7 +109,8 @@ postsRouter.put("/:blogPostId", (req, res, next) => {
 
       console.log("Updated post: ", updatePost);
 
-      fs.writeFileSync(postsJSONPath, JSON.stringify(postsList));
+      // fs.writeFileSync(postsJSONPath, JSON.stringify(postsList));
+      await writeBlogPosts(postsList);
       res.send(updatePost);
     } else {
       next(NotFound(`Book with id ${blogPostId} not found!`));
@@ -113,14 +121,16 @@ postsRouter.put("/:blogPostId", (req, res, next) => {
 });
 
 // 5. DELETE SINGLE AUTHOR: http://localhost:3001/authors/:blogPostId
-postsRouter.delete("/:blogPostId", (req, res, next) => {
+postsRouter.delete("/:blogPostId", async (req, res, next) => {
   try {
-    const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    // const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
+    const postsList = await getBlogPosts();
 
     const remainingPosts = postsList.filter((post) => post.id !== req.params.blogPostId);
 
     if (postsList.length !== remainingPosts.length) {
-      fs.writeFileSync(postsJSONPath, JSON.stringify(remainingPosts));
+      // fs.writeFileSync(postsJSONPath, JSON.stringify(remainingPosts));
+      writeBlogPosts(remainingPosts);
       res.send({ message: `Post deleted successfully` });
     } else {
       next(NotFound(`The post with the id: ${req.params.blogPostId} is not in our archive`));
