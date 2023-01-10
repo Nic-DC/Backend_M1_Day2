@@ -3,6 +3,7 @@ import multer from "multer";
 import { extname } from "path";
 import {
   saveBlogPostsCovers,
+  saveAuthorsAvatars,
   getBlogPosts,
   writeBlogPosts,
   getAuthorsList,
@@ -22,7 +23,7 @@ filesRouter.post("/blogPosts/:id", multer().single("cover"), async (req, res, ne
 
     const blogPosts = await getBlogPosts();
 
-    const index = blogPosts.findIndex((post) => post.id === req.params.id);
+    const index = blogPosts.findIndex((post) => post._id === req.params.id);
 
     if (index !== -1) {
       const oldPost = blogPosts[index];
@@ -44,11 +45,15 @@ filesRouter.post("/blogPosts/:id", multer().single("cover"), async (req, res, ne
 filesRouter.post("/authors/:id", multer().single("avatar"), async (req, res, next) => {
   try {
     const originalFileExtension = extname(fileName, req.file.buffer);
+    const fileName = req.params.id + originalFileExtension;
+
+    await saveAuthorsAvatars(fileName, req.file.buffer);
+
     const url = `http://localhost:3003/img/authors/${fileName}`;
 
-    const authorsList = getAuthorsList();
+    const authorsList = await getAuthorsList();
 
-    const index = authorsList.findIndex((author) => author.id === req.params.id);
+    const index = authorsList.findIndex((author) => author._id === req.params.id);
 
     if (index !== -1) {
       const oldAuthor = authorsList[index];

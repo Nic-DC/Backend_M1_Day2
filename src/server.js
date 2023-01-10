@@ -12,7 +12,7 @@ import cors from "cors";
 
 const server = express();
 
-const port = 3003;
+const port = process.env.PORT;
 
 const publicFolderPath = join(process.cwd(), "./public");
 
@@ -25,6 +25,7 @@ server.use("/authors", authorsRouter);
 server.use("/blogPosts", postsRouter);
 server.use("/files", filesRouter);
 
+/*-----------ERROR HANDLERS-------------*/
 server.use(badRequestHandler);
 server.use(notFoundHandler);
 server.use(serverErrorHandler);

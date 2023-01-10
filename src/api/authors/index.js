@@ -3,7 +3,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
-import { checkPostSchema, triggerBadRequest } from "./validator.js";
+import { checkAuthorSchema, triggerBadRequest } from "./validator.js";
 
 import httpErrors from "http-errors";
 import createHttpError from "http-errors";
@@ -29,15 +29,15 @@ console.log("The TARGET is: ", join(dirname(fileURLToPath(import.meta.url))));
 const authorJSONPath = join(dirname(fileURLToPath(import.meta.url)), "authorsList.json");
 
 // 1. POST: http://localhost:3003/authors/
-authorsRouter.post("/", checkPostSchema, triggerBadRequest, async (req, res, next) => {
+authorsRouter.post("/", checkAuthorSchema, triggerBadRequest, async (req, res, next) => {
   console.log("Request BODY: ", req.body);
 
   try {
     const author = {
       ...req.body,
-      email: `${req.body.name.toLowerCase()}.${req.body.surname.toLowerCase()}@email.com`,
+      // email: `${req.body.name}.${req.body.surname}@email.com`,
 
-      avatar: `https://ui-avatars.com/api/?name=${req.body.name}+${req.body.surname}`,
+      // avatar: `https://ui-avatars.com/api/?name=${req.body.name}+${req.body.surname}`,
 
       createdAt: new Date(),
       id: uniqid(),

@@ -35,7 +35,7 @@ postsRouter.post("/", checkPostSchema, triggerBadRequest, async (req, res, next)
       //   },
       // content: `${req.body.content}`,
       createdAt: new Date(),
-      id: uniqid(),
+      _id: uniqid(),
     };
 
     console.log("The post is: ", post);
@@ -46,7 +46,7 @@ postsRouter.post("/", checkPostSchema, triggerBadRequest, async (req, res, next)
     // fs.writeFileSync(postsJSONPath, JSON.stringify(postsList));
     await writeBlogPosts(postsList);
 
-    res.status(201).send({ message: `Post: '${post.title}' has been created by`, id: post.id });
+    res.status(201).send({ message: `Post: '${post.title}' has been created by`, id: post._id });
   } catch (error) {
     next(error);
   }
@@ -80,7 +80,7 @@ postsRouter.get("/:blogPostId", async (req, res, next) => {
     // const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
     const postsList = await getBlogPosts();
 
-    const post = postsList.find((post) => post.id === blogPostId);
+    const post = postsList.find((post) => post._id === blogPostId);
 
     if (post) {
       res.send(post);
@@ -100,7 +100,7 @@ postsRouter.put("/:blogPostId", async (req, res, next) => {
 
     // const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
     const postsList = await getBlogPosts();
-    const index = postsList.findIndex((post) => post.id === blogPostId);
+    const index = postsList.findIndex((post) => post._id === blogPostId);
 
     if (index !== -1) {
       const oldPost = postsList[index];
@@ -126,7 +126,7 @@ postsRouter.delete("/:blogPostId", async (req, res, next) => {
     // const postsList = JSON.parse(fs.readFileSync(postsJSONPath));
     const postsList = await getBlogPosts();
 
-    const remainingPosts = postsList.filter((post) => post.id !== req.params.blogPostId);
+    const remainingPosts = postsList.filter((post) => post._id !== req.params.blogPostId);
 
     if (postsList.length !== remainingPosts.length) {
       // fs.writeFileSync(postsJSONPath, JSON.stringify(remainingPosts));
