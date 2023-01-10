@@ -19,7 +19,7 @@ filesRouter.post("/blogPosts/:id", multer().single("cover"), async (req, res, ne
 
     await saveBlogPostsCovers(fileName, req.file.buffer);
 
-    const url = `http://localhost:3003/img/blogPosts/${fileName}`;
+    const url = `https://backendm1day2-production.up.railway.app/img/blogPosts/${fileName}`;
 
     const blogPosts = await getBlogPosts();
 
