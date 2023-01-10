@@ -10,16 +10,31 @@ import {
   writeAuthorsList,
 } from "../../lib/fs-tools.js";
 
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+
 const filesRouter = express.Router();
 
-filesRouter.post("/blogPosts/:id", multer().single("cover"), async (req, res, next) => {
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "m1-week2/blogs",
+    },
+  }),
+}).single("cover");
+
+filesRouter.post("/blogPosts/:id", cloudinaryUploader, async (req, res, next) => {
   try {
-    const originalFileExtension = extname(req.file.originalname);
-    const fileName = req.params.id + originalFileExtension;
+    // const originalFileExtension = extname(req.file.originalname);
+    // const fileName = req.params.id + originalFileExtension;
 
-    await saveBlogPostsCovers(fileName, req.file.buffer);
+    // await saveBlogPostsCovers(fileName, req.file.buffer);
 
-    const url = `https://backendm1day2-production.up.railway.app/img/blogPosts/${fileName}`;
+    // const url = `https://backendm1day2-production.up.railway.app/img/blogPosts/${fileName}`;
+
+    console.log("the req.file is: ", req.file);
+    const url = req.file.path;
 
     const blogPosts = await getBlogPosts();
 
