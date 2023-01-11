@@ -38,6 +38,8 @@ export const getPdfReadableStream = (blogPost) => {
     ],
   };
 
+  console.log("content image: ", docDefinition.content);
+
   const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
   pdfReadableStream.end();
 
