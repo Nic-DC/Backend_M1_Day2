@@ -13,6 +13,9 @@ import {
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 
+import { getPdfReadableStream } from "../../lib/pdf-tools.js";
+import { pipeline } from "stream";
+
 const filesRouter = express.Router();
 
 const cloudinaryUploader = multer({
@@ -86,6 +89,29 @@ filesRouter.post("/authors/:id", multer().single("avatar"), async (req, res, nex
   } catch (error) {
     console.log(error);
     next(error);
+  }
+});
+
+// CREATE PDF
+filesRouter.get("/:id/pdf", async (req, res, next) => {
+  const { id } = req.params;
+  const posts = await getBlogPosts();
+  console.log("posts", posts);
+
+  const selectedPost = posts.find((post) => post._id === id);
+  console.log("selectedPost", selectedPost);
+
+  if (selectedPost !== null) {
+    res.setHeader("Content-Disposition", "attachment; blogPost.pdf");
+
+    const source = getPdfReadableStream(selectedPost);
+    const destination = res;
+
+    pipeline(source, destination, (err) => {
+      if (err) console.log(err);
+    });
+  } else {
+    console.log(`There is no blog post with this id: ${id}`);
   }
 });
 

@@ -33,7 +33,8 @@ const corsOptions = {
 const publicFolderPath = join(process.cwd(), "./public");
 
 server.use(express.static(publicFolderPath));
-server.use(cors(corsOptions)); //
+// server.use(cors(corsOptions)); //
+server.use(cors()); //
 server.use(express.json());
 
 /*-----------ENDPOINTS-------------*/
