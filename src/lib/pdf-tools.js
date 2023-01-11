@@ -29,10 +29,6 @@ export const getPdfReadableStream = (blogPost) => {
             width: 150,
             text: "Category: " + blogPost.category,
           },
-          {
-            width: 150,
-            image: `${blogPost.cover}`,
-          },
         ],
       },
     ],
