@@ -22,11 +22,11 @@ export const getPdfReadableStream = (blogPost) => {
         alignment: "justify",
         columns: [
           {
-            width: 100,
+            width: 150,
             text: "Content: " + blogPost.content,
           },
           {
-            width: 100,
+            width: 150,
             text: "Category: " + blogPost.category,
           },
         ],
