@@ -10,6 +10,8 @@ import createHttpError from "http-errors";
 
 import { getBlogPosts, writeBlogPosts } from "../../lib/fs-tools.js";
 
+import { sendPostCreationEmail } from "../../lib/email-tools.js";
+
 const { NotFound, BadRequest } = httpErrors;
 
 const postsRouter = express.Router();
@@ -137,6 +139,17 @@ postsRouter.delete("/:blogPostId", async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+});
+
+// email when creating new post
+postsRouter.post("/newPost", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    await sendPostCreationEmail(email);
+    res.send({ message: `email successfully sent at: ${email}` });
+  } catch (error) {
     next(error);
   }
 });

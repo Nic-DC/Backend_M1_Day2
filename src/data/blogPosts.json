@@ -1,11 +1,1 @@
-[
-  {
-    "category": "Category2",
-    "title": "r",
-    "content": "<p>r</p>",
-    "cover": "https://res.cloudinary.com/dzu6mbbr3/image/upload/v1673451215/m1-week2/blogs/ohwes1zirat3ogtxfhma.jpg",
-    "createdAt": "2023-01-11T15:33:33.840Z",
-    "_id": "46f0ogtwlcrtn8k1",
-    "updatedAt": "2023-01-11T15:33:35.544Z"
-  }
-]
+[{"category":"Category2","title":"r","content":"<p>r</p>","cover":"https://res.cloudinary.com/dzu6mbbr3/image/upload/v1673451215/m1-week2/blogs/ohwes1zirat3ogtxfhma.jpg","createdAt":"2023-01-11T15:33:33.840Z","_id":"46f0ogtwlcrtn8k1","updatedAt":"2023-01-11T15:33:35.544Z"},{"category":"po","title":"ABM","content":"hopshasha","createdAt":"2023-01-12T15:21:07.746Z","_id":"46f0oeoslct8n3j7"}]
