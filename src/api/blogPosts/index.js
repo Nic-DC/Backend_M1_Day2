@@ -136,6 +136,7 @@ postsRouter.delete("/:blogPostId", async (req, res, next) => {
       next(NotFound(`The post with the id: ${req.params.blogPostId} is not in our archive`));
     }
   } catch (error) {
+    console.log(error);
     next(error);
   }
 });
