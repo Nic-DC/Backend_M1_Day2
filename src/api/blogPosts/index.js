@@ -6,10 +6,9 @@ import uniqid from "uniqid";
 import { checkPostSchema, triggerBadRequest } from "./validator.js";
 
 import httpErrors from "http-errors";
+import createHttpError from "http-errors";
 
 import { getBlogPosts, writeBlogPosts } from "../../lib/fs-tools.js";
-
-import { sendPostCreationEmail } from "../../lib/email-tools.js";
 
 const { NotFound, BadRequest } = httpErrors;
 
@@ -136,17 +135,6 @@ postsRouter.delete("/:blogPostId", async (req, res, next) => {
     } else {
       next(NotFound(`The post with the id: ${req.params.blogPostId} is not in our archive`));
     }
-  } catch (error) {
-    next(error);
-  }
-});
-
-//
-postsRouter.post("/newPost", async (req, res, next) => {
-  try {
-    const { email } = req.body;
-    await sendPostCreationEmail(email);
-    res.send({ message: `email successfully sent at: ${email}` });
   } catch (error) {
     next(error);
   }
